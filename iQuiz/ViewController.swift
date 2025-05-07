@@ -27,26 +27,15 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         // Do any additional setup after loading the view.
         tableView.delegate = self
         tableView.dataSource = self
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-                title: "Settings",
-                style: .plain,
-                target: self,
-                action: #selector(settingsTapped)
-            )
+        
     }
     
-    @objc func settingsTapped() {
+    @IBAction func settingButton(_ sender: UIBarButtonItem) {
         let alert = UIAlertController(title: nil, message: "Settings go here", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
     }
     
-    @IBAction func settingsButton(_ sender: UIBarButtonItem) {
-        let alert = UIAlertController(title: nil, message: "Settings go here", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
-
-    }
     
     
     
