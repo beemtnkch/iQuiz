@@ -17,9 +17,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
 
     let quizzes = [
-        Quiz(title: "Mathematics", description: "Test your math skills!", iconName: "math_icon"),
-        Quiz(title: "Marvel", description: "How well do you know Marvel?", iconName: "marvel_icon"),
-        Quiz(title: "Science", description: "Explore scientific facts!", iconName: "science_icon")
+        Quiz(title: "Mathematics", description: "Test your math skills!", iconName: "mathIcon"),
+        Quiz(title: "Marvel", description: "How well do you know Marvel?", iconName: "marvelIcon"),
+        Quiz(title: "Science", description: "Explore scientific facts!", iconName: "scienceIcon")
     ]
     @IBOutlet weak var tableView: UITableView!
     override func viewDidLoad() {
