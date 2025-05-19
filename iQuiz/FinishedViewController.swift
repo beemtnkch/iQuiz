@@ -18,6 +18,10 @@ class FinishedViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        print("Finished screen - totalQuestions:", totalQuestions)
+        print("Finished screen - correctAnswers:", correctAnswers)//bug check for score
+        
+        
         scoreLabel.text = "You got \(correctAnswers) of \(totalQuestions) correct"
 
                 switch Double(correctAnswers) / Double(totalQuestions) {
@@ -33,7 +37,15 @@ class FinishedViewController: UIViewController {
     }
     
     @IBAction func backToMenu(_ sender: UIButton) {
-        navigationController?.popToRootViewController(animated: true)
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let window = windowScene.windows.first {
+
+                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                if let rootVC = storyboard.instantiateInitialViewController() {
+                    window.rootViewController = rootVC
+                    window.makeKeyAndVisible()
+                }
+            }
     }
     
     /*

@@ -30,7 +30,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         Quiz(
             title: "Mathematics",
             description: "Test your math skills!",
-            iconName: "math_icon",
+            iconName: "mathIcon",
             questions: [
                 Question(text: "What is 2 + 2?", options: ["3", "4", "5"], correctIndex: 1),
                 Question(text: "What is 5 × 3?", options: ["15", "10", "8"], correctIndex: 0)
@@ -39,7 +39,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         Quiz(
             title: "Marvel Super Heroes",
             description: "Are you a Marvel fan?",
-            iconName: "marvel_icon",
+            iconName: "marvelIcon",
             questions: [
                 Question(text: "Who is Iron Man?", options: ["Bruce Wayne", "Tony Stark", "Clark Kent"], correctIndex: 1),
                 Question(text: "Who leads the Avengers?", options: ["Thor", "Captain America", "Hulk"], correctIndex: 1)
@@ -48,7 +48,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         Quiz(
             title: "Science",
             description: "Explore scientific facts!",
-            iconName: "science_icon",
+            iconName: "scienceIcon",
             questions: [
                 Question(text: "Water boils at what temperature (°C)?", options: ["100", "90", "80"], correctIndex: 0),
                 Question(text: "Earth is the ___ planet from the Sun.", options: ["2nd", "3rd", "4th"], correctIndex: 1)
@@ -82,6 +82,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
     }
     
+     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let selectedQuiz = quizzes[indexPath.row]
+        performSegue(withIdentifier: "toQuestion", sender: selectedQuiz)
+    }
+    
     @IBAction func settingButton(_ sender: UIBarButtonItem) {
         let alert = UIAlertController(title: nil, message: "Settings go here", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
@@ -105,10 +110,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 
         return cell
     }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let selectedQuiz = quizzes[indexPath.row]
-        performSegue(withIdentifier: "toQuestion", sender: selectedQuiz)
-    }
+
 }
 

@@ -24,12 +24,45 @@ class AnswerViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        
+        
         guard let question = question, let selectedIndex = selectedIndex else { return }
+        
+        if let label = correctAnswerLabel {
+            print("correctAnswerLabel outlet points to:", label)
+        } else {
+            print("correctAnswerLabel is nil — not connected properly!")
+        }//label bug check
+        
+        
+        
+        
+        
+        questionLabel.text = question.text
+        let correctIndex = question.correctIndex
+        let allOptions = question.options
+        print("Correct Index:", correctIndex)
+        print("All options:", allOptions)
 
-            questionLabel.text = question.text
-            correctAnswerLabel.text = "Correct Answer: \(question.options[question.correctIndex])"
-            yourAnswerLabel.text = "Your Answer: \(question.options[selectedIndex])"
+        if allOptions.indices.contains(correctIndex) {
+            let correctAnswer = allOptions[correctIndex]
+            print("Correct Answer Resolved As:", correctAnswer)
+            correctAnswerLabel.text = "Correct Answer: \(correctAnswer)"
+        } else {
+            correctAnswerLabel.text = "Correct Answer: [invalid index]"
+        }
+        //correctAnswerLabel.text = "Correct Answer: \(question.options[question.correctIndex])"
+        //yourAnswerLabel.text = "Your Answer: \(question.options[selectedIndex])"
+        
+        if allOptions.indices.contains(selectedIndex) {
+                    let selectedAnswer = allOptions[selectedIndex]
+                    print("Selected Answer Resolved As:", selectedAnswer)
+                    yourAnswerLabel.text = "Your Answer: \(selectedAnswer)"
+                } else {
+                    yourAnswerLabel.text = "Your Answer: [invalid index]"
+                }
 
+        
             if selectedIndex == question.correctIndex {
                 resultLabel.text = "Correct!"
                 resultLabel.textColor = .systemGreen

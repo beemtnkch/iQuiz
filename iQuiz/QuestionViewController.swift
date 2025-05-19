@@ -24,11 +24,11 @@ class QuestionViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        if let firstQuestion = quiz?.questions.first {
-            questionLabel.text = firstQuestion.text
-            choiceAButton.setTitle(firstQuestion.options[0], for: .normal)
-            choiceBButton.setTitle(firstQuestion.options[1], for: .normal)
-            choiceCButton.setTitle(firstQuestion.options[2], for: .normal)
+        if let question = quiz?.questions[currentQuestionIndex] {
+            questionLabel.text = question.text
+            choiceAButton.setTitle(question.options[0], for: .normal)
+            choiceBButton.setTitle(question.options[1], for: .normal)
+            choiceCButton.setTitle(question.options[2], for: .normal)
         }
         // Do any additional setup after loading the view.
         
