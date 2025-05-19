@@ -31,21 +31,56 @@ class QuestionViewController: UIViewController {
             choiceCButton.setTitle(question.options[2], for: .normal)
         }
         // Do any additional setup after loading the view.
+        //extra cred starts here
+        let swipeRight = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeRight))
+        swipeRight.direction = .right
+        view.addGestureRecognizer(swipeRight)
+
+        let swipeLeft = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeLeft))
+        swipeLeft.direction = .left
+        view.addGestureRecognizer(swipeLeft)
         
+        let hintLabel = UILabel()
+        hintLabel.text = "← Swipe to quit | → Swipe to continue"
+        hintLabel.textColor = .lightGray
+        hintLabel.font = UIFont.systemFont(ofSize: 14)
+        hintLabel.textAlignment = .center
+        hintLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(hintLabel)
+
+        // layout stuff
+        NSLayoutConstraint.activate([
+            hintLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -40),
+            hintLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+        ])
+
+        // fades out after 3seconds
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+            UIView.animate(withDuration: 0.5) {
+                hintLabel.alpha = 0
+            }
+            
+        }
         
-        
-        /*
-         // MARK: - Navigation
-         
-         // In a storyboard-based application, you will often want to do a little preparation before navigation
-         override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-         // Get the new view controller using segue.destination.
-         // Pass the selected object to the new view controller.
-         }
-         */
+        //extra cred ends
         
     }
     
+    @objc func handleSwipeRight() {
+        submitButtonTapped(UIButton()) // simulate tapping Submit
+    }
+
+    @objc func handleSwipeLeft() {
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let window = windowScene.windows.first {
+
+                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                if let rootVC = storyboard.instantiateInitialViewController() {
+                    window.rootViewController = rootVC
+                    window.makeKeyAndVisible()
+                }
+            }
+    }
     
     
     @IBAction func submitButtonTapped(_ sender: UIButton) {

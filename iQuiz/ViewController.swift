@@ -37,8 +37,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             ]
         ),
         Quiz(
-            title: "Marvel Super Heroes",
-            description: "Are you a Marvel fan?",
+            title: "Marvel",
+            description: "Avengers Assemble!",
             iconName: "marvelIcon",
             questions: [
                 Question(text: "Who is Iron Man?", options: ["Bruce Wayne", "Tony Stark", "Clark Kent"], correctIndex: 1),
