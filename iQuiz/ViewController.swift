@@ -7,17 +7,45 @@
 
 import UIKit
 
-struct Quiz {
+struct Quiz: Codable {
     let title: String
-    let description: String
-    let iconName: String
+    let desc: String
     let questions: [Question]
+
+    var description: String { desc }
 }
 
-struct Question {
+struct Question: Codable {
     let text: String
-    let options: [String]
-    let correctIndex: Int
+    let answer: Int
+    let answers: [String]
+
+    var options: [String] { answers }
+    var correctIndex: Int { answer }
+    
+    private enum CodingKeys: String, CodingKey {
+            case text, answers, answer
+        }
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            text = try container.decode(String.self, forKey: .text)
+            answers = try container.decode([String].self, forKey: .answers)
+
+            // Handle both number or string as answer
+            if let intValue = try? container.decode(Int.self, forKey: .answer) {
+                answer = intValue
+            } else if let strValue = try? container.decode(String.self, forKey: .answer),
+                      let converted = Int(strValue) {
+                answer = converted
+            } else {
+                throw DecodingError.dataCorruptedError(
+                    forKey: .answer,
+                    in: container,
+                    debugDescription: "Expected answer to be an Int or a numeric String"
+                )
+            }
+        }
 }
 
 
@@ -26,35 +54,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 
 
     //add questions
-    let quizzes: [Quiz] = [
-        Quiz(
-            title: "Mathematics",
-            description: "Test your math skills!",
-            iconName: "mathIcon",
-            questions: [
-                Question(text: "What is 2 + 2?", options: ["3", "4", "5"], correctIndex: 1),
-                Question(text: "What is 5 × 3?", options: ["15", "10", "8"], correctIndex: 0)
-            ]
-        ),
-        Quiz(
-            title: "Marvel",
-            description: "Avengers Assemble!",
-            iconName: "marvelIcon",
-            questions: [
-                Question(text: "Who is Iron Man?", options: ["Bruce Wayne", "Tony Stark", "Clark Kent"], correctIndex: 1),
-                Question(text: "Who leads the Avengers?", options: ["Thor", "Captain America", "Hulk"], correctIndex: 1)
-            ]
-        ),
-        Quiz(
-            title: "Science",
-            description: "Explore scientific facts!",
-            iconName: "scienceIcon",
-            questions: [
-                Question(text: "Water boils at what temperature (°C)?", options: ["100", "90", "80"], correctIndex: 0),
-                Question(text: "Earth is the ___ planet from the Sun.", options: ["2nd", "3rd", "4th"], correctIndex: 1)
-            ]
-        )
-    ]
+    var quizzes: [Quiz] = []
     
     
     //pass to QuestionViewController
@@ -74,12 +74,29 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 
 
     @IBOutlet weak var tableView: UITableView!
+   
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
         tableView.delegate = self
         tableView.dataSource = self
-        
+
+        let url = "http://tednewardsandbox.site44.com/questions.json"
+
+        fetchQuizzes(from: url) { downloadedQuizzes in
+            if let downloadedQuizzes = downloadedQuizzes {
+                DispatchQueue.main.async {
+                    self.quizzes = downloadedQuizzes
+                    self.tableView.reloadData()
+                    print("Quizzes loaded: \(downloadedQuizzes.count)")
+                }
+            } else {
+                DispatchQueue.main.async {
+                    let alert = UIAlertController(title: "Error", message: "Failed to load quizzes from the network.", preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "OK", style: .default))
+                    self.present(alert, animated: true)
+                }
+            }
+        }
     }
     
      func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -106,10 +123,45 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 
         cell.titleLabel.text = quiz.title
         cell.descriptionLabel.text = quiz.description
-        cell.iconImageView.image = UIImage(named: quiz.iconName)
+        //cell.iconImageView.image = UIImage(named: quiz.iconName)
 
         return cell
     }
 
 }
 
+func fetchQuizzes(from urlString: String, completion: @escaping ([Quiz]?) -> Void) {
+    print("🌐 Fetching from URL:", urlString)
+
+    guard let url = URL(string: urlString) else {
+        print("❌ Invalid URL")
+        completion(nil)
+        return
+    }
+
+    URLSession.shared.dataTask(with: url) { data, response, error in
+        if let error = error {
+            print("❌ Network error:", error.localizedDescription)
+            completion(nil)
+            return
+        }
+
+        guard let data = data else {
+            print("❌ No data returned from server")
+            completion(nil)
+            return
+        }
+
+        do {
+            let quizzes = try JSONDecoder().decode([Quiz].self, from: data)
+            print("✅ Successfully decoded quizzes:", quizzes.count)
+            completion(quizzes)
+        } catch {
+            print("❌ Decoding error:", error)
+            if let rawJSON = String(data: data, encoding: .utf8) {
+                print("📄 Raw JSON:\n\(rawJSON)")
+            }
+            completion(nil)
+        }
+    }.resume()
+}
