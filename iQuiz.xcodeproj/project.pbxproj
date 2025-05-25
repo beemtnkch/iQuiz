@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		975362A12DDEF05F0098FD96 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 975362A02DDEF05F0098FD96 /* Settings.bundle */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		97895E002DC9BCF8006FE950 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -24,6 +28,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		975362A02DDEF05F0098FD96 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		97895DE92DC9BCF6006FE950 /* iQuiz.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iQuiz.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		97895DFF2DC9BCF8006FE950 /* iQuizTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iQuizTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		97895E092DC9BCF8006FE950 /* iQuizUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iQuizUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -88,6 +93,7 @@
 		97895DE02DC9BCF6006FE950 = {
 			isa = PBXGroup;
 			children = (
+				975362A02DDEF05F0098FD96 /* Settings.bundle */,
 				97895DEB2DC9BCF6006FE950 /* iQuiz */,
 				97895E022DC9BCF8006FE950 /* iQuizTests */,
 				97895E0C2DC9BCF8006FE950 /* iQuizUITests */,
@@ -225,6 +231,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				975362A12DDEF05F0098FD96 /* Settings.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

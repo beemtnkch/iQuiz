@@ -34,10 +34,10 @@ struct Question: Codable {
 
             // Handle both number or string as answer
             if let intValue = try? container.decode(Int.self, forKey: .answer) {
-                answer = intValue
+                answer = intValue-1
             } else if let strValue = try? container.decode(String.self, forKey: .answer),
                       let converted = Int(strValue) {
-                answer = converted
+                answer = converted-1
             } else {
                 throw DecodingError.dataCorruptedError(
                     forKey: .answer,
@@ -106,12 +106,33 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     @IBAction func settingButton(_ sender: UIBarButtonItem) {
         let alert = UIAlertController(title: nil, message: "Settings go here", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        alert.addAction(UIAlertAction(title: "Check Now", style: .default, handler: { _ in
+                let urlString = UserDefaults.standard.string(forKey: "dataSourceURL") ?? "http://tednewardsandbox.site44.com/questions.json"
+                if let url = URL(string: urlString) {
+                    fetchQuizzes(from: url.absoluteString) { downloadedQuizzes in
+                        if let downloadedQuizzes = downloadedQuizzes {
+                            DispatchQueue.main.async {
+                                self.quizzes = downloadedQuizzes
+                                self.tableView.reloadData()
+                                print("Quizzes updated via Settings: \(downloadedQuizzes.count)")
+                            }
+                        } else {
+                            DispatchQueue.main.async {
+                                self.showAlert(title: "Fetch Failed", message: "Could not update quizzes from the URL.")
+                            }
+                        }
+                    }
+                }
+            }))
         present(alert, animated: true)
     }
     
     
-    
+    func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return quizzes.count
@@ -123,7 +144,18 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 
         cell.titleLabel.text = quiz.title
         cell.descriptionLabel.text = quiz.description
-        //cell.iconImageView.image = UIImage(named: quiz.iconName)
+        switch quiz.title.lowercased() {
+            case "mathematics":
+                cell.iconImageView.image = UIImage(named: "mathIcon")
+            case "science!":
+                cell.iconImageView.image = UIImage(named: "scienceIcon")
+            case "marvel super heroes":
+                cell.iconImageView.image = UIImage(named: "marvelIcon")
+            default:
+            cell.iconImageView.image = UIImage(named: "default_icon")//placeholder here
+                 
+            }
+
 
         return cell
     }
@@ -134,30 +166,30 @@ func fetchQuizzes(from urlString: String, completion: @escaping ([Quiz]?) -> Voi
     print("🌐 Fetching from URL:", urlString)
 
     guard let url = URL(string: urlString) else {
-        print("❌ Invalid URL")
+        print(" Invalid URL")
         completion(nil)
         return
     }
 
     URLSession.shared.dataTask(with: url) { data, response, error in
         if let error = error {
-            print("❌ Network error:", error.localizedDescription)
+            print(" Network error:", error.localizedDescription)
             completion(nil)
             return
         }
 
         guard let data = data else {
-            print("❌ No data returned from server")
+            print(" No data returned from server")
             completion(nil)
             return
         }
 
         do {
             let quizzes = try JSONDecoder().decode([Quiz].self, from: data)
-            print("✅ Successfully decoded quizzes:", quizzes.count)
+            print(" Successfully decoded quizzes:", quizzes.count)
             completion(quizzes)
         } catch {
-            print("❌ Decoding error:", error)
+            print(" Decoding error:", error)
             if let rawJSON = String(data: data, encoding: .utf8) {
                 print("📄 Raw JSON:\n\(rawJSON)")
             }
