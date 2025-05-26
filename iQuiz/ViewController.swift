@@ -105,26 +105,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     @IBAction func settingButton(_ sender: UIBarButtonItem) {
-        let alert = UIAlertController(title: nil, message: "Settings go here", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Check Now", style: .default, handler: { _ in
-                let urlString = UserDefaults.standard.string(forKey: "dataSourceURL") ?? "http://tednewardsandbox.site44.com/questions.json"
-                if let url = URL(string: urlString) {
-                    fetchQuizzes(from: url.absoluteString) { downloadedQuizzes in
-                        if let downloadedQuizzes = downloadedQuizzes {
-                            DispatchQueue.main.async {
-                                self.quizzes = downloadedQuizzes
-                                self.tableView.reloadData()
-                                print("Quizzes updated via Settings: \(downloadedQuizzes.count)")
-                            }
-                        } else {
-                            DispatchQueue.main.async {
-                                self.showAlert(title: "Fetch Failed", message: "Could not update quizzes from the URL.")
-                            }
-                        }
-                    }
-                }
-            }))
-        present(alert, animated: true)
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            if let settingsVC = storyboard.instantiateViewController(withIdentifier: "SettingsViewController") as? SettingsViewController {
+                settingsVC.modalPresentationStyle = .pageSheet
+                present(settingsVC, animated: true)
+            }
     }
     
     
@@ -160,40 +145,21 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         return cell
     }
 
-}
-
-func fetchQuizzes(from urlString: String, completion: @escaping ([Quiz]?) -> Void) {
-    print("🌐 Fetching from URL:", urlString)
-
-    guard let url = URL(string: urlString) else {
-        print(" Invalid URL")
-        completion(nil)
-        return
-    }
-
-    URLSession.shared.dataTask(with: url) { data, response, error in
-        if let error = error {
-            print(" Network error:", error.localizedDescription)
-            completion(nil)
-            return
-        }
-
-        guard let data = data else {
-            print(" No data returned from server")
-            completion(nil)
-            return
-        }
-
-        do {
-            let quizzes = try JSONDecoder().decode([Quiz].self, from: data)
-            print(" Successfully decoded quizzes:", quizzes.count)
-            completion(quizzes)
-        } catch {
-            print(" Decoding error:", error)
-            if let rawJSON = String(data: data, encoding: .utf8) {
-                print("📄 Raw JSON:\n\(rawJSON)")
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        let urlString = UserDefaults.standard.string(forKey: "dataSourceURL") ?? "http://tednewardsandbox.site44.com/questions.json"
+        fetchQuizzes(from: urlString) { downloadedQuizzes in
+            if let downloadedQuizzes = downloadedQuizzes {
+                DispatchQueue.main.async {
+                    self.quizzes = downloadedQuizzes
+                    self.tableView.reloadData()
+                    print("✅ Quizzes reloaded on viewWillAppear")
+                }
             }
-            completion(nil)
         }
-    }.resume()
+    }
+    
 }
+
